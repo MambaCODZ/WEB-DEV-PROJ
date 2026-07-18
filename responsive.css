@@ -1,0 +1,61 @@
+/* =========================================
+   RESPONSIVE DESIGN FOR The Whole Site
+   ========================================= */
+
+/* Tablets and Smaller Laptops (Max width: 992px) */
+@media (max-width: 992px) {
+    .glass-card {
+        max-width: 85%;
+        padding: 3rem !important;
+        min-height: 500px;
+    }
+}
+
+/* Standard Mobile Phones (Max width: 768px) */
+@media (max-width: 768px) {
+    .glass-card {
+        max-width: 95%;
+        padding: 2rem !important;
+        min-height: 450px;
+        border-radius: 1rem;
+    }
+
+    .formal-header {
+        font-size: 1.75rem;
+    }
+
+    .btn-lg {
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+    }
+}
+@media (max-width: 480px) {
+    .glass-card {
+        max-width: 100%;
+        padding: 1.5rem !important;
+        min-height: 400px;
+        border: none; 
+        border-radius: 0; 
+    }
+
+    .formal-header {
+        font-size: 1.5rem;
+    }
+    
+   
+    .bi-shield-check {
+        font-size: 4rem !important;
+    }
+}
+@media (max-height: 600px) {
+    .glass-card {
+        min-height: auto;
+        padding: 1.5rem !important;
+    }
+    
+    .container {
+        align-items: flex-start !important;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+}
