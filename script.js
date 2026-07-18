@@ -82,13 +82,15 @@ loginForm.addEventListener('submit', function (event) {
         void cardContainer.offsetWidth; 
         cardContainer.classList.add('shake-error');
         
-    } else {
+    }  else {
         loginForm.classList.remove('was-validated');
         
+        // Disable button and show loading spinner
         loginBtn.disabled = true;
         btnText.innerText = 'Connecting... ';
         btnSpinner.classList.remove('d-none');
-// Les Cordonnées Sont Correctes, On Affiche Un Message De Succès Et On Redirige L'utilisateur
+
+        //premier redirection   
         setTimeout(function() {
             loginContainer.innerHTML = `
                 <div class="text-center py-5">
@@ -97,6 +99,12 @@ loginForm.addEventListener('submit', function (event) {
                     <p class="fw-medium fs-5" style="color: #334155;">Redirecting to your feed...</p>
                 </div>
             `;
+            //deuxieme redirection a la page principale du site
+            setTimeout(function() {
+            
+                window.location.href = "main.html"; 
+            }, 1500);
+
         }, 2000);
     }
 });
