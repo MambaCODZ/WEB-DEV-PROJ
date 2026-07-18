@@ -1,26 +1,23 @@
-// 1. Inject Only the Custom Dot into the Body
+
 const cursorDot = document.createElement('div');
 cursorDot.classList.add('cursor-dot');
 document.body.appendChild(cursorDot);
-
-// 2. Custom Cursor Visibility Boundaries
 const cardContainer = document.getElementById('cardContainer');
 
 cardContainer.addEventListener('mouseenter', () => {
-    cursorDot.style.opacity = '0'; // Disappear inside the form
+    cursorDot.style.opacity = '0'; 
 });
 
 cardContainer.addEventListener('mouseleave', () => {
-    cursorDot.style.opacity = '1'; // Reappear outside the form
+    cursorDot.style.opacity = '1'; 
 });
 
-// 3. Follow Mouse Coordinates (Background updates removed as it is self-moving now)
+
 window.addEventListener('mousemove', function(e) {
     cursorDot.style.left = `${e.clientX}px`;
     cursorDot.style.top = `${e.clientY}px`;
 });
 
-// 4. Password Visibility Toggle
 const togglePasswordBtn = document.getElementById('togglePassword');
 const passwordInput = document.getElementById('passwordInput');
 const toggleIcon = document.getElementById('toggleIcon');
@@ -34,8 +31,6 @@ togglePasswordBtn.addEventListener('click', function () {
         toggleIcon.classList.replace('bi-eye-slash', 'bi-eye');
     }
 });
-
-// 5. Live Password Strength Meter
 const strengthBar = document.getElementById('strengthBar');
 
 passwordInput.addEventListener('input', function() {
@@ -61,7 +56,7 @@ passwordInput.addEventListener('input', function() {
     }
 });
 
-// 6. Form Submission & Input Validation
+//Verification Des Cordonnées Insérées Par L'utilisateur
 const loginForm = document.getElementById('loginForm');
 const loginBtn = document.getElementById('loginBtn');
 const btnText = document.getElementById('btnText');
@@ -93,7 +88,7 @@ loginForm.addEventListener('submit', function (event) {
         loginBtn.disabled = true;
         btnText.innerText = 'Connecting... ';
         btnSpinner.classList.remove('d-none');
-
+// Les Cordonnées Sont Correctes, On Affiche Un Message De Succès Et On Redirige L'utilisateur
         setTimeout(function() {
             loginContainer.innerHTML = `
                 <div class="text-center py-5">

@@ -3,56 +3,39 @@ body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     min-height: 100vh;
-    
-    /* Hide system cursor on the background */
-    cursor: none; 
-    
-    /* Deep dark color palette shifting continuously */
+    cursor: none;   
     background: linear-gradient(-45deg, #09090b, #18181b, #27272a, #09090b);
     background-size: 400% 400%;
     animation: darkGradientMove 12s ease infinite;
     overflow-x: hidden; 
 }
-
-/* Background Animation loop */
 @keyframes darkGradientMove {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
-
-/* Perfect Form Proportions (Large Size) */
 .glass-card {
     width: 100%;
     max-width: 750px; 
     min-height: 550px; 
     padding: 4rem 5rem !important; 
-    
     display: flex;
     flex-direction: column;
     justify-content: center;
-    
-    /* Clean white glass layer for maximum dark contrast */
     background: rgba(255, 255, 255, 0.92); 
     backdrop-filter: blur(20px); 
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 1.5rem;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-
-    /* Bring back default system cursor inside the form */
     cursor: default; 
 }
-
-/* Responsive fallbacks for smaller screens */
 @media (max-width: 768px) {
     .glass-card {
         padding: 2.5rem !important;
         min-height: 450px;
     }
 }
-
-/* Restore system pointers over specific form items */
 .glass-card button, 
 .glass-card a, 
 .glass-card label,
@@ -62,8 +45,6 @@ body {
 .glass-card input {
     cursor: text !important;
 }
-
-/* Formal Text Styles (No pure black text, uses professional slate tones) */
 .formal-header {
     color: #0f172a;
     letter-spacing: -0.5px;
@@ -79,8 +60,6 @@ body {
     border-color: #0f172a;
     box-shadow: 0 0 0 0.25rem rgba(15, 23, 42, 0.15);
 }
-
-/* Custom Interactive Dot Cursor */
 .cursor-dot {
     width: 10px;
     height: 10px;
@@ -93,8 +72,6 @@ body {
     z-index: 9999;
     transition: opacity 0.2s ease; 
 }
-
-/* Error Shake Animation */
 .shake-error {
     animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
     border: 2px solid #dc3545 !important;
