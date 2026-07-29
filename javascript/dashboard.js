@@ -1,267 +1,205 @@
-    const darkModeBtn = document.getElementById('darkModeBtn');
-    const darkModeSwitch = document.getElementById('darkModeSwitch');
+document.addEventListener("DOMContentLoaded", () => {
 
-    darkModeBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+    // --- 1. GLOBAL TOAST HELPER ---
+    const showGlobalToast = (message, type = 'bg-primary') => {
+        let toastEl = document.getElementById('actionToast');
+        let toastMsg = document.getElementById('toastMessage');
         
-        document.body.classList.toggle('dark-theme');
-        
-    
-        const isDark = document.body.classList.contains('dark-theme');
-        darkModeSwitch.checked = isDark;
+        // If the page doesn't have a toast container, inject one quickly
+        if (!toastEl) {
+            const toastHTML = `
+                <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 1090;">
+                    <div id="actionToast" class="toast align-items-center border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body fw-bold text-white" id="toastMessage"></div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', toastHTML);
+            toastEl = document.getElementById('actionToast');
+            toastMsg = document.getElementById('toastMessage');
+        }
 
-
-        const chartTextColor = isDark ? '#94a3b8' : '#64748b';
-        const chartGridColor = isDark ? '#27272a' : '#e2e8f0';
-
-        Chart.helpers.each(Chart.instances, function(instance) {
-            instance.options.scales.x.ticks.color = chartTextColor;
-            instance.options.scales.y.ticks.color = chartTextColor;
-            instance.options.scales.y.grid.color = chartGridColor;
-            instance.update();
-        });
-    });
-
-
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-
-        window.location.href = 'index.html'; 
-    });
-
-    const tooltipsOptions = {
-        backgroundColor: '#0f172a',
-        titleColor: '#ffffff',
-        bodyColor: '#cbd5e1',
-        padding: 12,
-        cornerRadius: 6,
-        displayColors: true,
+        toastMsg.innerText = message;
+        toastEl.className = `toast align-items-center border-0 shadow ${type}`;
+        new bootstrap.Toast(toastEl).show();
     };
 
-    const ctxOps = document.getElementById('opsChart').getContext('2d');
-    const opsChartInstance = new Chart(ctxOps, {
-        type: 'line',
-        data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            datasets: [
-                {
-                    label: 'Processed Transactions',
-                    data: [120, 190, 150, 210, 180, 140, 230],
-                    borderColor: '#1d4ed8',
-                    backgroundColor: 'rgba(29, 78, 216, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#1d4ed8',
-                    pointHoverRadius: 6
-                },
-                {
-                    label: 'Server Load (%)',
-                    data: [45, 65, 55, 75, 60, 50, 80],
-                    borderColor: '#64748b',
-                    backgroundColor: 'rgba(100, 116, 139, 0.05)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#64748b',
-                    pointHoverRadius: 6
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            interaction: { mode: 'index', intersect: false },
-            plugins: { legend: { display: false }, tooltip: tooltipsOptions },
-            scales: {
-                y: { beginAtZero: true, grid: { color: '#e2e8f0', borderDash: [4, 4] } },
-                x: { grid: { display: false } }
-            }
-        }
-    });
-
-
-    const ctxFin = document.getElementById('financialChart').getContext('2d');
-    new Chart(ctxFin, {
-        type: 'bar',
-        data: {
-            labels: ['Q1', 'Q2', 'Q3'],
-            datasets: [
-                { label: 'Overhead', data: [42000, 48000, 41000], backgroundColor: '#94a3b8', borderRadius: 4 },
-                { label: 'Profit', data: [65000, 78000, 85000], backgroundColor: '#1d4ed8', borderRadius: 4 }
-            ]
-        },
-        options: {
-            responsive: true,
-            interaction: { mode: 'index', intersect: false },
-            plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 10 } }, tooltip: tooltipsOptions },
-            scales: {
-                y: { beginAtZero: true, grid: { color: '#e2e8f0', borderDash: [4, 4] } },
-                x: { grid: { display: false } }
-            }
-        }
-    });
-
-
-    const timeFilters = document.querySelectorAll('.time-filter');
-
-    timeFilters.forEach(btn => {
-        btn.addEventListener('click', function() {
-        
-            timeFilters.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            const newTransactions = Array.from({length: 7}, () => Math.floor(Math.random() * 200) + 100);
-            const newServerLoad = Array.from({length: 7}, () => Math.floor(Math.random() * 60) + 30);
-
-            // Inject new data and animate the chart update
-            opsChartInstance.data.datasets[0].data = newTransactions;
-            opsChartInstance.data.datasets[1].data = newServerLoad;
-            opsChartInstance.update();
-        });
-    });
-
-    const ctxTraffic = document.getElementById('trafficChart').getContext('2d');
-    const trafficChartInstance = new Chart(ctxTraffic, {
-        type: 'doughnut',
-        data: {
-            labels: ['Direct', 'Referral', 'Organic', 'Social'],
-            datasets: [{
-                data: [45, 25, 20, 10],
-                backgroundColor: [
-                    '#1d4ed8', // Primary Blue
-                    '#3b82f6', // Light Blue
-                    '#93c5fd', // Pale Blue
-                    '#e2e8f0'  // Gray
-                ],
-                borderWidth: 0,
-                hoverOffset: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '75%', // Makes the ring thinner and more modern
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: {
-                        usePointStyle: true,
-                        boxWidth: 8,
-                        padding: 20,
-                        color: '#64748b' // Default legend text color
-                    }
-                },
-                tooltip: tooltipsOptions
-            }
-        }
-    });
-
-
-    darkModeBtn.addEventListener('click', function(e) {
+    // --- 2. DARK MODE LOGIC ---
+    const darkModeBtn = document.getElementById('darkModeBtn');
+    const darkModeSwitch = document.getElementById('darkModeSwitch');
     
-        
-        const isDark = document.body.classList.contains('dark-theme');
-        const chartTextColor = isDark ? '#94a3b8' : '#64748b';
+    // Check localStorage for existing preference
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-theme'); // Assuming you have .dark-theme in princip.css
+        if(darkModeSwitch) darkModeSwitch.checked = true;
+    }
 
-        if (trafficChartInstance) {
-            trafficChartInstance.options.plugins.legend.labels.color = chartTextColor;
+    if (darkModeBtn && darkModeSwitch) {
+        darkModeBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Keep dropdown open when clicking the toggle
+            const isDark = document.body.classList.toggle('dark-theme');
+            darkModeSwitch.checked = isDark;
             
-        
-            trafficChartInstance.data.datasets[0].backgroundColor[3] = isDark ? '#27272a' : '#e2e8f0'; 
-            trafficChartInstance.update();
+            if (isDark) {
+                localStorage.setItem('theme', 'dark');
+                showGlobalToast("Dark mode enabled.", "bg-dark");
+            } else {
+                localStorage.setItem('theme', 'light');
+                showGlobalToast("Light mode enabled.", "bg-secondary");
+            }
+        });
+    }
+
+    // --- 3. LOGOUT LOGIC ---
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            logoutBtn.innerHTML = `<i class="bi bi-box-arrow-right me-2"></i> Logging out...`;
+            setTimeout(() => {
+                // Simulate redirecting to a login page
+                document.body.style.opacity = '0';
+                document.body.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => {
+                    alert("Redirecting to Login Page..."); 
+                }, 500);
+            }, 800);
+        });
+    }
+
+    // --- 4. QUICK SETTINGS OFFCANVAS (Dynamic Injection) ---
+    // We inject this HTML so you don't have to paste it into every single HTML file
+    const settingsOffcanvasHTML = `
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="settingsOffcanvas" aria-labelledby="settingsOffcanvasLabel" style="z-index: 1080;">
+        <div class="offcanvas-header border-bottom bg-light">
+            <h6 class="offcanvas-title fw-bold text-dark" id="settingsOffcanvasLabel"><i class="bi bi-gear-fill text-primary me-2"></i>Quick Settings</h6>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-4">
+            
+            <!-- UI Preferences -->
+            <h6 class="text-muted small fw-bold mb-3">UI PREFERENCES</h6>
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <div class="fw-bold text-dark" style="font-size: 0.9rem;">Compact Sidebar</div>
+                    <div class="text-muted" style="font-size: 0.75rem;">Reduce sidebar width</div>
+                </div>
+                <div class="form-check form-switch m-0 p-0">
+                    <input class="form-check-input ms-2 border-secondary" type="checkbox" id="compactSidebarToggle">
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <div class="fw-bold text-dark" style="font-size: 0.9rem;">Animations</div>
+                    <div class="text-muted" style="font-size: 0.75rem;">Enable UI transitions</div>
+                </div>
+                <div class="form-check form-switch m-0 p-0">
+                    <input class="form-check-input ms-2 border-secondary" type="checkbox" id="animationsToggle" checked>
+                </div>
+            </div>
+
+            <hr class="text-muted opacity-25">
+
+            <!-- Notifications -->
+            <h6 class="text-muted small fw-bold mb-3 mt-4">NOTIFICATIONS</h6>
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <div class="fw-bold text-dark" style="font-size: 0.9rem;">Email Alerts</div>
+                    <div class="text-muted" style="font-size: 0.75rem;">Receive daily summaries</div>
+                </div>
+                <div class="form-check form-switch m-0 p-0">
+                    <input class="form-check-input ms-2 border-secondary" type="checkbox" id="emailAlertsToggle" checked>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <div class="fw-bold text-dark" style="font-size: 0.9rem;">Critical SMS</div>
+                    <div class="text-muted" style="font-size: 0.75rem;">For system downtimes</div>
+                </div>
+                <div class="form-check form-switch m-0 p-0">
+                    <input class="form-check-input ms-2 border-secondary" type="checkbox" id="smsAlertsToggle">
+                </div>
+            </div>
+
+            <hr class="text-muted opacity-25">
+
+            <!-- Action Buttons -->
+            <div class="mt-4 d-grid gap-2">
+                <button class="btn btn-outline-primary btn-sm fw-bold"><i class="bi bi-person-badge me-2"></i>Manage Profile</button>
+                <button class="btn btn-outline-danger btn-sm fw-bold" id="clearDataBtn"><i class="bi bi-trash3 me-2"></i>Clear App Data</button>
+            </div>
+
+        </div>
+    </div>`;
+    
+    // Inject into body
+    document.body.insertAdjacentHTML('beforeend', settingsOffcanvasHTML);
+    const settingsOffcanvas = new bootstrap.Offcanvas(document.getElementById('settingsOffcanvas'));
+
+    // Find the Settings button from the profile dropdown
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    dropdownItems.forEach(item => {
+        if (item.innerHTML.includes('bi-gear') || item.innerText.includes('Settings')) {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                settingsOffcanvas.show();
+            });
         }
     });
-    function showToast(message, type = 'success') {
-        const toastEl = document.getElementById('actionToast');
-        const toastMessage = document.getElementById('toastMessage');
-        
-        toastEl.classList.remove('bg-success', 'bg-primary');
-        if (type === 'success') toastEl.classList.add('bg-success');
-        if (type === 'primary') toastEl.classList.add('bg-primary');
-        
-        toastMessage.textContent = message;
-        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-        toast.show();
-    }
 
-
-    const newTransactionForm = document.getElementById('newTransactionForm');
-    if(newTransactionForm) {
-        newTransactionForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const clientName = document.getElementById('clientName').value;
-            const amount = parseFloat(document.getElementById('transactionAmount').value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-            const status = document.getElementById('transactionStatus').value;
-            
-            const id = '#TRX-' + Math.floor(Math.random() * 9000 + 1000);
-            const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-
-            let badgeClass = 'badge-success';
-            if(status === 'Pending') badgeClass = 'badge-warning';
-            if(status === 'Failed') badgeClass = 'badge-danger';
-
-            const newRow = `
-                <tr>
-                    <td class="fw-bold">${id}</td>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(clientName)}&background=f1f5f9&color=1e293b" class="rounded-circle" width="30" height="30" alt="${clientName}">
-                            <span>${clientName}</span>
-                        </div>
-                    </td>
-                    <td>${date}</td>
-                    <td class="fw-bold">$${amount}</td>
-                    <td><span class="custom-badge ${badgeClass}">${status}</span></td>
-                </tr>
-            `;
-
-            
-            const tableBody = document.querySelector('#transactionTable tbody');
-            if(tableBody) tableBody.insertAdjacentHTML('afterbegin', newRow);
-
-        
-            bootstrap.Modal.getInstance(document.getElementById('newTransactionModal')).hide();
-            this.reset();
-            showToast('Transaction successfully recorded!', 'success');
+    // --- 5. SETTINGS INTERACTIVITY ---
+    
+    // Compact Sidebar Toggle
+    const compactSidebarToggle = document.getElementById('compactSidebarToggle');
+    if (compactSidebarToggle) {
+        compactSidebarToggle.addEventListener('change', (e) => {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                if(e.target.checked) {
+                    sidebar.style.width = '200px';
+                    showGlobalToast("Compact sidebar enabled.", "bg-primary");
+                } else {
+                    sidebar.style.width = '260px'; // Assuming your default is 260px
+                    showGlobalToast("Default sidebar restored.", "bg-secondary");
+                }
+            }
         });
     }
 
+    // Generic toggles for visual feedback
+    const genericToggles = ['animationsToggle', 'emailAlertsToggle', 'smsAlertsToggle'];
+    genericToggles.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', (e) => {
+                const settingName = e.target.parentElement.previousElementSibling.querySelector('.fw-bold').innerText;
+                const status = e.target.checked ? 'enabled' : 'disabled';
+                showGlobalToast(`${settingName} ${status}.`, e.target.checked ? 'bg-success' : 'bg-secondary');
+            });
+        }
+    });
 
-    const btnGenerateReport = document.getElementById('btnGenerateReport');
-    if(btnGenerateReport) {
-        btnGenerateReport.addEventListener('click', function() {
-            const btn = this;
-            const originalContent = btn.innerHTML;
-            
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Generating...';
-            btn.disabled = true;
-
+    // Clear Data Button (Simulates resetting localStorage)
+    const clearDataBtn = document.getElementById('clearDataBtn');
+    if (clearDataBtn) {
+        clearDataBtn.addEventListener('click', () => {
+            clearDataBtn.innerHTML = `<i class="bi bi-arrow-repeat spin me-2"></i>Clearing...`;
             setTimeout(() => {
-                btn.innerHTML = originalContent;
-                btn.disabled = false;
-                showToast('System report generated and downloaded.', 'primary');
-            }, 2000);
+                localStorage.clear();
+                clearDataBtn.innerHTML = `<i class="bi bi-check-circle me-2"></i>Data Cleared`;
+                clearDataBtn.classList.replace('btn-outline-danger', 'btn-success');
+                showGlobalToast("Local application data wiped.", "bg-dark");
+                
+                setTimeout(() => {
+                    clearDataBtn.innerHTML = `<i class="bi bi-trash3 me-2"></i>Clear App Data`;
+                    clearDataBtn.classList.replace('btn-success', 'btn-outline-danger');
+                }, 2000);
+            }, 1000);
         });
     }
-
-    const addUserForm = document.getElementById('addUserForm');
-    if(addUserForm) {
-        addUserForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
-            this.reset();
-            showToast('New user added to directory.', 'success');
-        });
-    }
-
-    const sendCampaignForm = document.getElementById('sendCampaignForm');
-    if(sendCampaignForm) {
-        sendCampaignForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            bootstrap.Modal.getInstance(document.getElementById('sendCampaignModal')).hide();
-            this.reset();
-            showToast('Marketing campaign dispatched!', 'primary');
-        });
-    }
+});
