@@ -1,135 +1,61 @@
-/* ==========================================================================
-   PURE CSS MOBILE DRAWER (BUG-FIXED)
-   ========================================================================== */
+/* =========================================
+   RESPONSIVE DESIGN FOR The Whole Site
+   ========================================= */
 
-@media (max-width: 991.98px) {
+/* Tablets and Smaller Laptops (Max width: 992px) */
+@media (max-width: 992px) {
+    .glass-card {
+        max-width: 85%;
+        padding: 3rem !important;
+        min-height: 500px;
+    }
+}
 
-    /* 1. OFF-CANVAS SIDEBAR DRAWER */
-    .sidebar, 
-    aside, 
-    [class*="sidebar"] {
-        position: fixed !important;
-        top: 0;
-        left: -260px !important; /* Fully hidden off-screen */
-        width: 260px !important;
-        height: 100vh !important;
-        z-index: 10000 !important;
-        transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.35) !important;
+/* Standard Mobile Phones (Max width: 768px) */
+@media (max-width: 768px) {
+    .glass-card {
+        max-width: 95%;
+        padding: 2rem !important;
+        min-height: 450px;
+        border-radius: 1rem;
     }
 
-    /* 2. FLOATING TOGGLE BUTTON (CLOSED STATE: ☰ Nav at top left) */
-    .sidebar::after, 
-    aside::after {
-        content: "☰ Nav";
-        position: absolute;
-        top: 12px;
-        left: 270px; /* Positions button at X = 10px on screen when drawer is closed */
-        background: #2563eb;
-        color: #ffffff;
-        padding: 7px 14px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        transition: all 0.25s ease;
-        white-space: nowrap;
+    .formal-header {
+        font-size: 1.75rem;
     }
 
-    /* 3. PURE CSS BACKDROP OVERLAY */
-    .sidebar::before,
-    aside::before {
-        content: "";
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(15, 23, 42, 0.55);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.3s ease;
-        z-index: -1;
+    .btn-lg {
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+    }
+}
+@media (max-width: 480px) {
+    .glass-card {
+        max-width: 100%;
+        padding: 1.5rem !important;
+        min-height: 400px;
+        border: none; 
+        border-radius: 0; 
     }
 
-    /* 4. OPEN DRAWER STATE */
-    .sidebar:hover,
-    .sidebar:focus-within,
-    .sidebar.show,
-    .sidebar.active,
-    aside:hover,
-    aside:focus-within,
-    aside.show,
-    aside.active {
-        left: 0 !important;
+    .formal-header {
+        font-size: 1.5rem;
     }
-
-    /* MORPH BUTTON TO '✕' INSIDE SIDEBAR WHEN OPEN */
-    .sidebar:hover::after,
-    .sidebar:focus-within::after,
-    .sidebar.show::after,
-    .sidebar.active::after,
-    aside:hover::after,
-    aside:focus-within::after,
-    aside.show::after,
-    aside.active::after {
-        content: "✕";
-        left: auto !important;
-        right: 14px !important;
-        top: 14px !important;
-        background: rgba(255, 255, 255, 0.12) !important;
-        color: #ffffff !important;
-        padding: 6px 12px !important;
-        border-radius: 6px !important;
-        box-shadow: none !important;
+    
+   
+    .bi-shield-check {
+        font-size: 4rem !important;
     }
-
-    /* Show backdrop blur when drawer is open */
-    .sidebar:hover::before,
-    .sidebar:focus-within::before,
-    .sidebar.show::before,
-    .sidebar.active::before,
-    aside:hover::before,
-    aside:focus-within::before,
-    aside.show::before,
-    aside.active::before {
-        opacity: 1;
-        pointer-events: auto;
+}
+@media (max-height: 600px) {
+    .glass-card {
+        min-height: auto;
+        padding: 1.5rem !important;
     }
-
-    /* 5. MAIN DASHBOARD CONTENT FIXES */
-    .main-content, 
-    main, 
-    .content-wrapper,
-    div[class*="flex-grow"] {
-        width: 100% !important;
-        max-width: 100% !important;
-        margin-left: 0 !important;
-        padding: 16px 12px !important;
-        flex: 0 0 100% !important;
-    }
-
-    /* 6. HEADER SAFE ZONE (Leaves room for ☰ Nav button) */
-    header, .top-header {
-        width: 100% !important;
-        padding-left: 85px !important; /* Prevents search bar from overlapping the blue button */
-    }
-
-    .row > [class*="col-"] {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-        width: 100% !important;
-        margin-bottom: 12px !important;
-    }
-
-    .table-responsive {
-        overflow-x: auto !important;
-    }
-
-    canvas {
-        max-width: 100% !important;
+    
+    .container {
+        align-items: flex-start !important;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
     }
 }
