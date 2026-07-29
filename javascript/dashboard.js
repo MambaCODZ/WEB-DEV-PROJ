@@ -26,31 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         new bootstrap.Toast(toastEl).show();
     };
 
-    // --- 2. DARK MODE LOGIC ---
-    const darkModeBtn = document.getElementById('darkModeBtn');
-    const darkModeSwitch = document.getElementById('darkModeSwitch');
-    
-    // Check localStorage for existing preference
-    if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark-theme'); // Assuming you have .dark-theme in princip.css
-        if(darkModeSwitch) darkModeSwitch.checked = true;
-    }
 
-    if (darkModeBtn && darkModeSwitch) {
-        darkModeBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Keep dropdown open when clicking the toggle
-            const isDark = document.body.classList.toggle('dark-theme');
-            darkModeSwitch.checked = isDark;
-            
-            if (isDark) {
-                localStorage.setItem('theme', 'dark');
-                showGlobalToast("Dark mode enabled.", "bg-dark");
-            } else {
-                localStorage.setItem('theme', 'light');
-                showGlobalToast("Light mode enabled.", "bg-secondary");
-            }
-        });
-    }
 
     // --- 3. LOGOUT LOGIC ---
     const logoutBtn = document.getElementById('logoutBtn');
@@ -135,7 +111,8 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
         </div>
-    </div>`;
+    </div>
+    `;
     
     // Inject into body
     document.body.insertAdjacentHTML('beforeend', settingsOffcanvasHTML);
