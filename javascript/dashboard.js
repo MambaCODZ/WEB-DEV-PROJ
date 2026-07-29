@@ -1,6 +1,3 @@
-
-
-
 const darkModeBtn = document.getElementById('darkModeBtn');
 const darkModeSwitch = document.getElementById('darkModeSwitch');
 
