@@ -49,21 +49,4 @@ This template provides a commercial-ready frontend asset configured with mocked 
 | **Charts & Graphs** | Chart.js | Real-time Canvas-rendered financial charts |
 | **Icons** | Bootstrap Icons (`bi-*`) | Scalable vector icon system |
 
----
-
-## 📁 Directory Structure
-
-```text
-├── index.html            # Main Executive Overview Dashboard
-├── revenue.html          # Revenue Metrics & Transaction History
-├── billing.html          # Billing, Invoices & Plan Management
-├── export.html           # Report Export & Generator Interface
-├── css/
-│   ├── bootstrap.min.css # Core Bootstrap stylesheet
-│   ├── style.css         # Primary dashboard custom styles & variables
-│   └── responsive.css    # Full-spectrum device responsive rules & drawer logic
-├── js/
-│   ├── bootstrap.bundle.js# Bootstrap interactive components (dropdowns, modals)
-│   ├── chart.min.js      # Data visualization library
-│   └── finance.js        # Dashboard state, chart renders, & mock export handlers
-└── assets/               # Brand logos, avatars, and static media
+--- 
