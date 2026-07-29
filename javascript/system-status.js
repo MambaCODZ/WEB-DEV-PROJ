@@ -1,161 +1,136 @@
-const darkModeBtn = document.getElementById('darkModeBtn');
-const darkModeSwitch = document.getElementById('darkModeSwitch');
-
-darkModeBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    document.body.classList.toggle('dark-theme');
-    
-  
-    const isDark = document.body.classList.contains('dark-theme');
-    darkModeSwitch.checked = isDark;
-
-
-    const chartTextColor = isDark ? '#94a3b8' : '#64748b';
-    const chartGridColor = isDark ? '#27272a' : '#e2e8f0';
-
-    Chart.helpers.each(Chart.instances, function(instance) {
-        instance.options.scales.x.ticks.color = chartTextColor;
-        instance.options.scales.y.ticks.color = chartTextColor;
-        instance.options.scales.y.grid.color = chartGridColor;
-        instance.update();
-    });
-});
-
-
-document.getElementById('logoutBtn').addEventListener('click', function() {
-
-    window.location.href = 'index.html'; 
-});
 document.addEventListener("DOMContentLoaded", () => {
-    
-    // --- 1. LIVE SEARCH FILTERING ---
-    const searchInput = document.getElementById("globalSearch");
-    const tableRows = document.querySelectorAll("#nodesTable tbody tr");
+    // --- DYNAMIC CSS INJECTION ---
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .spin { animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes pulseAlert { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .node-degraded { animation: pulseAlert 1.5s infinite; background-color: rgba(255, 193, 7, 0.1) !important; }
+        tr { transition: background-color 0.3s ease; }
+    `;
+    document.head.appendChild(style);
 
-    if (searchInput) {
-        searchInput.addEventListener("input", function() {
-            const searchTerm = this.value.toLowerCase();
-            
-            tableRows.forEach(row => {
-                // Get all text content from the row
-                const rowData = row.textContent.toLowerCase();
-                
-                // Show or hide based on match
-                if (rowData.includes(searchTerm)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        });
-    }
-
-    // --- 2. SIMULATE LIVE SERVER LATENCY ---
-    const latencyDisplay = document.getElementById("latencyDisplay");
-    
-    // Update the latency every 4 seconds to make the dashboard feel "alive"
-    if (latencyDisplay) {
-        setInterval(() => {
-            // Generate a random latency between 10ms and 28ms
-            const newLatency = Math.floor(Math.random() * 18) + 10;
-            latencyDisplay.innerText = `${newLatency}ms`;
-        }, 4000); 
-    }
-
-
-    // --- 3. TOAST NOTIFICATION HELPER ---
-    // Reusable function to show Bootstrap toasts
+    // --- TOAST HELPER ---
     const showToast = (message, type = 'bg-success') => {
         const toastEl = document.getElementById('actionToast');
         const toastMsg = document.getElementById('toastMessage');
-        
         if(toastEl && toastMsg) {
             toastMsg.innerText = message;
-            
-            // Remove existing color classes, then add the new one
-            toastEl.classList.remove('bg-success', 'bg-primary', 'bg-warning', 'bg-info');
-            toastEl.classList.add(type);
-            
-            const toast = new bootstrap.Toast(toastEl);
-            toast.show();
+            toastEl.className = `toast align-items-center border-0 shadow ${type}`;
+            new bootstrap.Toast(toastEl).show();
         }
     };
 
+    // --- ANIMATED COUNTERS ---
+    const animateValue = (element, start, end, duration, suffix = "") => {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const easeProgress = 1 - Math.pow(1 - progress, 4); 
+            let currentVal = (easeProgress * (end - start) + start);
+            
+            // Format decimals if needed
+            if(end % 1 !== 0) currentVal = currentVal.toFixed(2);
+            else currentVal = Math.floor(currentVal);
+            
+            element.innerHTML = currentVal + suffix;
+            if (progress < 1) window.requestAnimationFrame(step);
+            else element.innerHTML = end + suffix;
+        };
+        window.requestAnimationFrame(step);
+    };
 
-    // --- 4. ACTION BUTTONS INTERACTIVITY ---
+    // Animate static dashboard numbers
+    document.querySelectorAll('.stat-value').forEach(el => {
+        let text = el.innerText.replace(/,/g, '');
+        if(text.includes('%')) {
+            animateValue(el, 0, parseFloat(text), 2000, '%');
+        } else if (!isNaN(text) && !text.includes('/')) {
+            animateValue(el, 0, parseInt(text, 10), 2000);
+        }
+    });
 
-    // A. Ping All Nodes
+    // --- LIVE LATENCY SIMULATOR ---
+    const latencyDisplay = document.getElementById("latencyDisplay");
+    if (latencyDisplay) {
+        setInterval(() => {
+            const currentLatency = parseInt(latencyDisplay.innerText);
+            const variation = Math.floor(Math.random() * 7) - 3; // -3 to +3
+            let newLatency = currentLatency + variation;
+            if(newLatency < 8) newLatency = 8;
+            if(newLatency > 45) newLatency = 45;
+            
+            latencyDisplay.innerText = `${newLatency}ms`;
+            
+            // Color code based on speed
+            if(newLatency > 30) latencyDisplay.style.color = '#dc3545';
+            else if(newLatency > 20) latencyDisplay.style.color = '#ffc107';
+            else latencyDisplay.style.color = ''; // default
+        }, 2000); 
+    }
+
+    // --- SELF-HEALING NETWORK SIMULATION ---
+    const tableRows = document.querySelectorAll("#nodesTable tbody tr");
+    if (tableRows.length > 0) {
+        setInterval(() => {
+            // 20% chance every 10 seconds to degrade a random node
+            if (Math.random() > 0.8) {
+                const randomRow = tableRows[Math.floor(Math.random() * tableRows.length)];
+                const statusCell = randomRow.querySelector('.status-cell');
+                const originalStatus = statusCell.innerHTML;
+
+                // Degrade
+                statusCell.innerHTML = `<span class="custom-badge badge-warning"><i class="bi bi-exclamation-triangle me-1"></i>Syncing</span>`;
+                randomRow.classList.add('node-degraded');
+
+                // Auto-recover after 4 seconds
+                setTimeout(() => {
+                    statusCell.innerHTML = originalStatus;
+                    randomRow.classList.remove('node-degraded');
+                }, 4000);
+            }
+        }, 10000);
+    }
+
+    // --- BUTTON INTERACTIONS (Retained & Polished) ---
     const pingBtn = document.getElementById("pingAllBtn");
     if (pingBtn) {
         pingBtn.addEventListener("click", () => {
             const originalText = pingBtn.innerHTML;
-            
-            // 1. Set button to loading state
             pingBtn.disabled = true;
-            pingBtn.innerHTML = `<i class="bi bi-arrow-repeat spin me-2" style="animation: spin 1s linear infinite;"></i>Pinging...`;
-
-            // 2. Temporarily change table badges to "Pinging..."
+            pingBtn.innerHTML = `<i class="bi bi-arrow-repeat spin me-2"></i>Pinging...`;
+            
             const statusCells = document.querySelectorAll("#nodesTable .status-cell");
-            const originalBadges = [];
+            const originalBadges = Array.from(statusCells).map(cell => cell.innerHTML);
 
-            statusCells.forEach((cell, index) => {
-                originalBadges[index] = cell.innerHTML; // Save original HTML
+            statusCells.forEach(cell => {
                 cell.innerHTML = `<span class="custom-badge badge-warning"><i class="bi bi-hourglass-split me-1"></i>Pinging</span>`;
             });
 
-            // 3. Reset after simulated delay
             setTimeout(() => {
                 pingBtn.disabled = false;
                 pingBtn.innerHTML = originalText;
-                
-                // Restore original table badges
-                statusCells.forEach((cell, index) => {
-                    cell.innerHTML = originalBadges[index];
-                });
-
-                showToast("All nodes responded successfully.", "bg-success");
-            }, 1200);
+                statusCells.forEach((cell, index) => { cell.innerHTML = originalBadges[index]; });
+                showToast("All nodes responded successfully (Avg 12ms).", "bg-success");
+            }, 1500);
         });
     }
 
-    // B. Download Health Report
-    const downloadReportBtn = document.getElementById("downloadReportBtn");
-    if (downloadReportBtn) {
-        downloadReportBtn.addEventListener("click", () => {
-            const originalText = downloadReportBtn.innerHTML;
-            downloadReportBtn.innerHTML = `<i class="bi bi-arrow-down-circle me-2"></i>Preparing PDF...`;
-            
-            setTimeout(() => {
-                downloadReportBtn.innerHTML = originalText;
-                showToast("Health report downloaded successfully.", "bg-primary");
-            }, 800);
-        });
-    }
-
-    // C. Restart Gateway
     const restartGatewayBtn = document.getElementById("restartGatewayBtn");
     if (restartGatewayBtn) {
         restartGatewayBtn.addEventListener("click", () => {
             const originalText = restartGatewayBtn.innerHTML;
             restartGatewayBtn.disabled = true;
             restartGatewayBtn.classList.add("text-danger");
-            restartGatewayBtn.innerHTML = `<i class="bi bi-power me-2"></i>Restarting...`;
+            restartGatewayBtn.innerHTML = `<i class="bi bi-power me-2"></i>Rebooting...`;
             
             setTimeout(() => {
                 restartGatewayBtn.disabled = false;
                 restartGatewayBtn.classList.remove("text-danger");
                 restartGatewayBtn.innerHTML = originalText;
-                showToast("API Gateway restarted and stable.", "bg-info");
-            }, 2000);
+                showToast("API Gateway rebooted and traffic rerouted.", "bg-info");
+            }, 2500);
         });
     }
-    
-    // Add CSS for the spinning animation dynamically
-    const style = document.createElement('style');
-    style.innerHTML = `
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-    `;
-    document.head.appendChild(style);
 });
