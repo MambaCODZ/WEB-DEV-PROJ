@@ -180,3 +180,247 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+document.addEventListener('DOMContentLoaded', () => {
+
+    // ==========================================
+    // GLOBAL UTILITIES
+    // ==========================================
+    
+    // Toast Notification System
+    const showToast = (message, type = 'success') => {
+        const toastEl = document.getElementById('actionToast');
+        if (!toastEl) return;
+        
+        const toastMessage = document.getElementById('toastMessage');
+        toastMessage.textContent = message;
+        
+        // Change color based on type
+        toastEl.className = `toast align-items-center border-0 shadow text-white bg-${type}`;
+        
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    };
+
+    // Helper to format currency
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    };
+
+
+    // ==========================================
+    // 1. REVENUE METRICS PAGE LOGIC
+    // ==========================================
+    if (document.getElementById('revenueGrowthChart')) {
+        let currentMRR = 84500;
+        let currentARPU = 124.50;
+
+        // Initialize Chart.js
+        const ctx = document.getElementById('revenueGrowthChart').getContext('2d');
+        const revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+                datasets: [{
+                    label: 'Gross Revenue ($)',
+                    data: [45000, 48000, 52000, 51000, 59000, 65000, 71000, 78000, 81000, 84500],
+                    borderColor: '#1d4ed8',
+                    backgroundColor: 'rgba(29, 78, 216, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Handle Add Revenue Stream Form
+        const revForm = document.getElementById('revenueForm');
+        revForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const streamName = document.getElementById('streamName').value;
+            const streamValue = parseFloat(document.getElementById('streamValue').value);
+
+            // Update KPIs
+            currentMRR += streamValue;
+            document.getElementById('mrrDisplay').textContent = formatCurrency(currentMRR);
+            
+            // Slightly increase ARPU artificially for demonstration
+            currentARPU += (streamValue / 1000); 
+            document.getElementById('arpuDisplay').textContent = formatCurrency(currentARPU);
+
+            // Add projection point to chart
+            revenueChart.data.labels.push('Nov (Proj)');
+            revenueChart.data.datasets[0].data.push(currentMRR);
+            revenueChart.update();
+
+            // Close Modal & Reset Form
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addRevenueModal'));
+            modal.hide();
+            revForm.reset();
+
+            showToast(`${streamName} stream added! Projections updated.`);
+        });
+    }
+
+
+    // ==========================================
+    // 2. BILLING & INVOICES PAGE LOGIC
+    // ==========================================
+    if (document.getElementById('invoiceTable')) {
+        const invoiceTable = document.getElementById('invoiceTable').getElementsByTagName('tbody')[0];
+        
+        // Handle Generate Invoice
+        const invForm = document.getElementById('invoiceForm');
+        invForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const client = document.getElementById('invClient').value;
+            const amount = parseFloat(document.getElementById('invAmount').value);
+            const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const invNumber = `INV-2023-${Math.floor(Math.random() * 900) + 100}`;
+
+            // Create new row dynamically
+            const newRow = invoiceTable.insertRow(0); // Insert at top
+            newRow.innerHTML = `
+                <td class="ps-4 fw-bold">${invNumber}</td>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-circle bg-primary text-white" style="width:30px; height:30px; font-size:12px;">${client.charAt(0)}</div>
+                        <span>${client}</span>
+                    </div>
+                </td>
+                <td>${date}</td>
+                <td class="fw-bold">${formatCurrency(amount)}</td>
+                <td><span class="custom-badge badge-warning status-badge">Pending</span></td>
+                <td class="pe-4 text-end">
+                    <button class="btn btn-sm btn-outline-success mark-paid-btn me-1">Mark Paid</button>
+                    <button class="btn btn-sm btn-outline-secondary download-inv-btn"><i class="bi bi-download"></i></button>
+                </td>
+            `;
+
+            // Close Modal & Show Toast
+            const modal = bootstrap.Modal.getInstance(document.getElementById('createInvoiceModal'));
+            modal.hide();
+            invForm.reset();
+            showToast(`Invoice ${invNumber} generated for ${client}.`);
+        });
+
+        // Event Delegation for dynamically added buttons in the table
+        invoiceTable.addEventListener('click', (e) => {
+            const target = e.target.closest('button');
+            if (!target) return;
+            
+            const row = target.closest('tr');
+            const invNum = row.cells[0].innerText;
+
+            // MARK AS PAID LOGIC
+            if (target.classList.contains('mark-paid-btn')) {
+                const badge = row.querySelector('.status-badge');
+                badge.className = 'custom-badge badge-success status-badge';
+                badge.innerText = 'Paid';
+                target.remove(); // Remove the button once paid
+                showToast(`Invoice ${invNum} marked as Paid!`);
+            }
+
+            // DOWNLOAD INVOICE LOGIC (Generates a real file)
+            if (target.classList.contains('download-inv-btn')) {
+                const client = row.cells[1].innerText.trim();
+                const amount = row.cells[3].innerText;
+                const status = row.querySelector('.status-badge').innerText;
+                
+                // Create mock invoice text
+                const invoiceContent = `
+========================================
+             ENTERPRISE INC.
+========================================
+INVOICE: ${invNum}
+CLIENT:  ${client}
+STATUS:  ${status}
+----------------------------------------
+TOTAL DUE: ${amount}
+========================================
+Thank you for your business!`;
+
+                // Create a Blob and trigger actual browser download
+                const blob = new Blob([invoiceContent], { type: 'text/plain' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${invNum}_${client.replace(/\s+/g, '_')}.txt`;
+                link.click();
+                
+                showToast(`Downloading ${invNum}...`);
+            }
+        });
+    }
+
+
+    // ==========================================
+    // 3. EXPORT REPORTS PAGE LOGIC
+    // ==========================================
+    if (document.getElementById('exportForm')) {
+        const exportForm = document.getElementById('exportForm');
+        
+        exportForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const format = document.getElementById('exportFormat').value;
+            
+            const includeRev = document.getElementById('dataRevenue').checked;
+            const includeTx = document.getElementById('dataTransactions').checked;
+            const includeTax = document.getElementById('dataTax').checked;
+
+            // Validation
+            if (!startDate || !endDate) {
+                showToast('Please select a valid date range.', 'danger');
+                return;
+            }
+
+            showToast('Compiling financial data...', 'primary');
+
+            // Generate Mock Data based on toggles
+            let exportData = [];
+            if (includeRev) exportData.push({ metric: 'Gross Revenue', value: '$84,500.00', date: endDate });
+            if (includeTx) exportData.push({ metric: 'Transactions', count: 1240, volume: '$120,400.00' });
+            if (includeTax) exportData.push({ metric: 'Estimated Tax', value: '$12,450.00', rate: '15%' });
+
+            // File generation logic based on dropdown selection
+            setTimeout(() => {
+                let fileContent, mimeType, extension;
+
+                if (format === 'json') {
+                    // Export as JSON
+                    fileContent = JSON.stringify({ range: { start: startDate, end: endDate }, data: exportData }, null, 2);
+                    mimeType = 'application/json';
+                    extension = 'json';
+                } else {
+                    // Export as CSV
+                    const headers = Object.keys(exportData[0]).join(',');
+                    const rows = exportData.map(obj => Object.values(obj).map(v => `"${v}"`).join(',')).join('\n');
+                    fileContent = `${headers}\n${rows}`;
+                    mimeType = 'text/csv';
+                    extension = 'csv';
+                }
+
+                // Trigger Download
+                const blob = new Blob([fileContent], { type: mimeType });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `Financial_Report_${startDate}_to_${endDate}.${extension}`;
+                link.click();
+
+                showToast(`Report successfully exported as ${extension.toUpperCase()}!`, 'success');
+            }, 800); // Slight delay to simulate processing
+        });
+    }
+});
