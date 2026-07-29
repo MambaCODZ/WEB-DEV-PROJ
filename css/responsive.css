@@ -1,41 +1,61 @@
 /* ==========================================================================
-   OPTION B: PURE CSS SLIDE-OUT WITH FLOATING TAB
+   PURE CSS MOBILE DRAWER (BUG-FIXED)
    ========================================================================== */
 
 @media (max-width: 991.98px) {
 
-    /* 1. Off-screen sidebar drawer */
+    /* 1. OFF-CANVAS SIDEBAR DRAWER */
     .sidebar, 
     aside, 
     [class*="sidebar"] {
         position: fixed !important;
         top: 0;
-        left: -260px !important; /* Tucked off-screen */
+        left: -260px !important; /* Fully hidden off-screen */
         width: 260px !important;
         height: 100vh !important;
-        z-index: 9999 !important;
-        transition: left 0.3s ease-in-out !important;
-        box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+        z-index: 10000 !important;
+        transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.35) !important;
     }
 
-    /* 2. Pure CSS Pull Tab attached to sidebar edge */
+    /* 2. FLOATING TOGGLE BUTTON (CLOSED STATE: ☰ Nav at top left) */
     .sidebar::after, 
     aside::after {
-        content: "☰ Menu";
+        content: "☰ Nav";
         position: absolute;
-        top: 15px;
-        right: -75px;
-        background: #111827;
-        color: #fff;
-        padding: 8px 12px;
-        border-radius: 0 6px 6px 0;
+        top: 12px;
+        left: 270px; /* Positions button at X = 10px on screen when drawer is closed */
+        background: #2563eb;
+        color: #ffffff;
+        padding: 7px 14px;
+        border-radius: 8px;
         font-size: 13px;
-        font-weight: bold;
+        font-weight: 600;
         cursor: pointer;
-        box-shadow: 3px 0 8px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        transition: all 0.25s ease;
+        white-space: nowrap;
     }
 
-    /* 3. Slide out on tap/hover or when .show / .active class is applied */
+    /* 3. PURE CSS BACKDROP OVERLAY */
+    .sidebar::before,
+    aside::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+    }
+
+    /* 4. OPEN DRAWER STATE */
     .sidebar:hover,
     .sidebar:focus-within,
     .sidebar.show,
@@ -47,19 +67,69 @@
         left: 0 !important;
     }
 
-    /* 4. Full-width dashboard underneath */
+    /* MORPH BUTTON TO '✕' INSIDE SIDEBAR WHEN OPEN */
+    .sidebar:hover::after,
+    .sidebar:focus-within::after,
+    .sidebar.show::after,
+    .sidebar.active::after,
+    aside:hover::after,
+    aside:focus-within::after,
+    aside.show::after,
+    aside.active::after {
+        content: "✕";
+        left: auto !important;
+        right: 14px !important;
+        top: 14px !important;
+        background: rgba(255, 255, 255, 0.12) !important;
+        color: #ffffff !important;
+        padding: 6px 12px !important;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+    }
+
+    /* Show backdrop blur when drawer is open */
+    .sidebar:hover::before,
+    .sidebar:focus-within::before,
+    .sidebar.show::before,
+    .sidebar.active::before,
+    aside:hover::before,
+    aside:focus-within::before,
+    aside.show::before,
+    aside.active::before {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* 5. MAIN DASHBOARD CONTENT FIXES */
     .main-content, 
     main, 
-    .content-wrapper {
+    .content-wrapper,
+    div[class*="flex-grow"] {
         width: 100% !important;
         max-width: 100% !important;
         margin-left: 0 !important;
-        padding: 12px !important;
+        padding: 16px 12px !important;
+        flex: 0 0 100% !important;
+    }
+
+    /* 6. HEADER SAFE ZONE (Leaves room for ☰ Nav button) */
+    header, .top-header {
+        width: 100% !important;
+        padding-left: 85px !important; /* Prevents search bar from overlapping the blue button */
     }
 
     .row > [class*="col-"] {
         flex: 0 0 100% !important;
         max-width: 100% !important;
+        width: 100% !important;
         margin-bottom: 12px !important;
+    }
+
+    .table-responsive {
+        overflow-x: auto !important;
+    }
+
+    canvas {
+        max-width: 100% !important;
     }
 }
