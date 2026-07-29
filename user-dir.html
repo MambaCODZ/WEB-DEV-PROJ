@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Directory - Entreprise Dashboard</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <link rel="stylesheet" href="css/princip.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="brand">
+            <i class="bi bi-bar-chart-line-fill text-primary"></i> Entreprise
+        </div>
+        
+        <div class="menu-label">Operations</div>
+        <nav class="nav flex-column">
+            <a href="index.html" class="nav-link"><i class="bi bi-speedometer2"></i> Executive Overview</a>
+            <a href="sys-st.html" class="nav-link"><i class="bi bi-activity"></i> System Status</a>
+            <a href="sec-logs.html" class="nav-link"><i class="bi bi-shield-lock"></i> Security Logs</a>
+            <a href="user-dir.html" class="nav-link active"><i class="bi bi-people"></i> User Directory</a>
+        </nav>
+
+        <div class="menu-label">Financials</div>
+        <nav class="nav flex-column">
+            <a href="#" class="nav-link"><i class="bi bi-graph-up-arrow"></i> Revenue Metrics</a>
+            <a href="#" class="nav-link"><i class="bi bi-receipt"></i> Billing & Invoices</a>
+            <a href="#" class="nav-link"><i class="bi bi-file-earmark-spreadsheet"></i> Export Reports</a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-search text-muted"></i>
+                <input type="text" class="search-bar" id="globalSearch" placeholder="Search by name, role, or email...">
+            </div>
+            <div class="d-flex align-items-center gap-4">
+                <div class="dropdown">
+                    <i class="bi bi-bell position-relative text-muted fs-5 dropdown-toggle" data-bs-toggle="dropdown" style="cursor: pointer;"></i>
+                </div>
+                <div class="dropdown">
+                    <div class="d-flex align-items-center gap-2 text-end dropdown-toggle" data-bs-toggle="dropdown" style="cursor: pointer;">
+                        <div><div class="text-dark fw-bold admin-name" style="font-size: 0.875rem;">System Admin</div></div>
+                        <div class="avatar-circle">SA</div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <li>
+                            <button class="dropdown-item d-flex align-items-center justify-content-between" id="darkModeBtn">
+                                <span><i class="bi bi-moon-stars me-2"></i> Dark Mode</span>
+                                <div class="form-check form-switch m-0 p-0">
+                                    <input class="form-check-input ms-2" type="checkbox" id="darkModeSwitch" style="pointer-events: none;">
+                                </div>
+                            </button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item text-danger fw-bold" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i> Logout</button></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="container-fluid p-4">
+            
+            <!-- Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6 col-xl-3">
+                    <div class="card dash-card h-100 p-4">
+                        <div class="icon-box"><i class="bi bi-people-fill"></i></div>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <div>
+                                <div class="stat-value">1,204</div>
+                                <div class="stat-label">Total Users</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                    <div class="card dash-card h-100 p-4">
+                        <div class="icon-box text-success bg-success bg-opacity-10"><i class="bi bi-person-check-fill"></i></div>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <div>
+                                <div class="stat-value">980</div>
+                                <div class="stat-label">Active This Week</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                    <div class="card dash-card h-100 p-4">
+                        <div class="icon-box text-warning bg-warning bg-opacity-10"><i class="bi bi-person-lines-fill"></i></div>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <div>
+                                <div class="stat-value">12</div>
+                                <div class="stat-label">Pending Approvals</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-xl-3">
+                    <div class="card dash-card h-100 p-4">
+                        <div class="icon-box text-primary bg-primary bg-opacity-10"><i class="bi bi-shield-lock-fill"></i></div>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <div>
+                                <div class="stat-value">24</div>
+                                <div class="stat-label">Admin Accounts</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mb-4 mt-2">
+                <div class="col-12">
+                    <div class="d-flex flex-wrap gap-3">
+                        <button class="btn btn-primary shadow-sm" id="addUserBtn"><i class="bi bi-person-plus me-2"></i>Add New User</button>
+                        <button class="btn btn-outline-secondary bg-white shadow-sm action-btn" id="exportUsersBtn"><i class="bi bi-download me-2"></i>Export Directory</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Table -->
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="card dash-card p-4 h-100">
+                        <div class="table-responsive">
+                            <table class="table table-borderless align-middle custom-table" id="usersTable">
+                                <thead class="text-muted">
+                                    <tr>
+                                        <th>USER</th>
+                                        <th>ROLE</th>
+                                        <th>DEPARTMENT</th>
+                                        <th>STATUS</th>
+                                        <th class="text-end">ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="https://ui-avatars.com/api/?name=Sarah+Connor&background=e2e8f0&color=1e293b" class="rounded-circle" width="40" height="40">
+                                                <div>
+                                                    <div class="fw-bold text-dark">Sarah Connor</div>
+                                                    <div class="small text-muted">s.connor@entreprise.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fw-bold">Manager</td>
+                                        <td>Operations</td>
+                                        <td><span class="custom-badge badge-success">Active</span></td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-light me-1"><i class="bi bi-pencil"></i></button>
+                                            <button class="btn btn-sm btn-light text-danger"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="https://ui-avatars.com/api/?name=John+Doe&background=e2e8f0&color=1e293b" class="rounded-circle" width="40" height="40">
+                                                <div>
+                                                    <div class="fw-bold text-dark">John Doe</div>
+                                                    <div class="small text-muted">j.doe@entreprise.com</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="fw-bold">Analyst</td>
+                                        <td>Financials</td>
+                                        <td><span class="custom-badge badge-warning">Pending</span></td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-light me-1"><i class="bi bi-pencil"></i></button>
+                                            <button class="btn btn-sm btn-light text-danger"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-4">
+        <div id="actionToast" class="toast align-items-center border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-bold text-white" id="toastMessage">Action completed successfully.</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="javascript/dashboard.js"></script>
+    <script src="javascript/user-dir.js"></script>
+</body>
+</html>
