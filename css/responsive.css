@@ -1,61 +1,65 @@
-/* =========================================
-   RESPONSIVE DESIGN FOR The Whole Site
-   ========================================= */
+/* ==========================================================================
+   OPTION B: PURE CSS SLIDE-OUT WITH FLOATING TAB
+   ========================================================================== */
 
-/* Tablets and Smaller Laptops (Max width: 992px) */
-@media (max-width: 992px) {
-    .glass-card {
-        max-width: 85%;
-        padding: 3rem !important;
-        min-height: 500px;
-    }
-}
+@media (max-width: 991.98px) {
 
-/* Standard Mobile Phones (Max width: 768px) */
-@media (max-width: 768px) {
-    .glass-card {
-        max-width: 95%;
-        padding: 2rem !important;
-        min-height: 450px;
-        border-radius: 1rem;
+    /* 1. Off-screen sidebar drawer */
+    .sidebar, 
+    aside, 
+    [class*="sidebar"] {
+        position: fixed !important;
+        top: 0;
+        left: -260px !important; /* Tucked off-screen */
+        width: 260px !important;
+        height: 100vh !important;
+        z-index: 9999 !important;
+        transition: left 0.3s ease-in-out !important;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.3);
     }
 
-    .formal-header {
-        font-size: 1.75rem;
+    /* 2. Pure CSS Pull Tab attached to sidebar edge */
+    .sidebar::after, 
+    aside::after {
+        content: "☰ Menu";
+        position: absolute;
+        top: 15px;
+        right: -75px;
+        background: #111827;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 0 6px 6px 0;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 3px 0 8px rgba(0,0,0,0.2);
     }
 
-    .btn-lg {
-        padding: 0.6rem 1rem;
-        font-size: 1rem;
-    }
-}
-@media (max-width: 480px) {
-    .glass-card {
-        max-width: 100%;
-        padding: 1.5rem !important;
-        min-height: 400px;
-        border: none; 
-        border-radius: 0; 
+    /* 3. Slide out on tap/hover or when .show / .active class is applied */
+    .sidebar:hover,
+    .sidebar:focus-within,
+    .sidebar.show,
+    .sidebar.active,
+    aside:hover,
+    aside:focus-within,
+    aside.show,
+    aside.active {
+        left: 0 !important;
     }
 
-    .formal-header {
-        font-size: 1.5rem;
+    /* 4. Full-width dashboard underneath */
+    .main-content, 
+    main, 
+    .content-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        padding: 12px !important;
     }
-    
-   
-    .bi-shield-check {
-        font-size: 4rem !important;
-    }
-}
-@media (max-height: 600px) {
-    .glass-card {
-        min-height: auto;
-        padding: 1.5rem !important;
-    }
-    
-    .container {
-        align-items: flex-start !important;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
+
+    .row > [class*="col-"] {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 12px !important;
     }
 }
