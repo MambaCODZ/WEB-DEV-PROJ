@@ -11,6 +11,17 @@
     
     <link rel="stylesheet" href="css/princip.css">
     <link rel="stylesheet" href="css/responsive.css">
+    
+    <style>
+        /* Make table rows look clickable */
+        .interactive-row {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .interactive-row:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+    </style>
 </head>
 <body>
 
@@ -22,7 +33,7 @@
         
         <div class="menu-label">Operations</div>
         <nav class="nav flex-column">
-            <a href="main.html" class="nav-link"><i class="bi bi-speedometer2"></i> Executive Overview</a>
+            <a href="index.html" class="nav-link"><i class="bi bi-speedometer2"></i> Executive Overview</a>
             <a href="sys-st.html" class="nav-link"><i class="bi bi-activity"></i> System Status</a>
             <a href="sec-logs.html" class="nav-link active"><i class="bi bi-shield-lock"></i> Security Logs</a>
             <a href="user-dir.html" class="nav-link"><i class="bi bi-people"></i> User Directory</a>
@@ -38,7 +49,7 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Top Header (Matches previous pages) -->
+        <!-- Top Header -->
         <header class="top-header">
             <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-search text-muted"></i>
@@ -112,7 +123,7 @@
                         <div class="icon-box"><i class="bi bi-bricks"></i></div>
                         <div class="d-flex justify-content-between align-items-end">
                             <div>
-                                <div class="stat-value">1,892</div>
+                                <div class="stat-value" id="firewallBlocks">1,892</div>
                                 <div class="stat-label">Firewall Blocks</div>
                             </div>
                             <div class="trend-down"><i class="bi bi-arrow-down-right me-1"></i> 4.5%</div>
@@ -137,8 +148,8 @@
                 <div class="col-12">
                     <div class="d-flex flex-wrap gap-3">
                         <button class="btn btn-primary shadow-sm" id="runScanBtn"><i class="bi bi-search me-2"></i>Run Deep Scan</button>
-                        <button class="btn btn-outline-secondary bg-white shadow-sm action-btn" id="exportAuditBtn"><i class="bi bi-file-earmark-lock me-2"></i>Export Audit Log</button>
-                        <button class="btn btn-outline-danger bg-white shadow-sm action-btn"><i class="bi bi-trash3 me-2"></i>Clear Cache</button>
+                        <button class="btn btn-outline-secondary bg-white shadow-sm action-btn" id="exportAuditBtn"><i class="bi bi-file-earmark-lock me-2"></i>Export Audit Log (CSV)</button>
+                        <button class="btn btn-outline-danger bg-white shadow-sm action-btn" id="clearCacheBtn"><i class="bi bi-trash3 me-2"></i>Clear Cache</button>
                     </div>
                 </div>
             </div>
@@ -147,10 +158,18 @@
             <div class="row g-4">
                 <div class="col-12">
                     <div class="card dash-card p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                             <h5 class="fw-bold mb-0 text-dark chart-title">Recent Security Events</h5>
-                            <button class="btn btn-sm btn-link text-decoration-none">Filter Logs</button>
+                            
+                            <!-- Interactive Filters -->
+                            <div class="btn-group shadow-sm" role="group" id="severityFilters">
+                                <button type="button" class="btn btn-sm btn-dark active" data-filter="all">All</button>
+                                <button type="button" class="btn btn-sm btn-outline-dark" data-filter="high">High</button>
+                                <button type="button" class="btn btn-sm btn-outline-dark" data-filter="medium">Medium</button>
+                                <button type="button" class="btn btn-sm btn-outline-dark" data-filter="low">Low</button>
+                            </div>
                         </div>
+                        
                         <div class="table-responsive">
                             <table class="table table-borderless align-middle custom-table" id="securityTable">
                                 <thead class="text-muted">
@@ -163,26 +182,33 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <tr class="interactive-row" data-severity="high" data-details="Multiple failed login attempts from a recognized bad actor IP block. Source matched against global threat intelligence feed. Recommendation: Block IP subnet at firewall level.">
                                         <td class="text-muted small">Oct 24, 14:32:01</td>
                                         <td class="fw-bold"><i class="bi bi-box-arrow-in-right text-muted me-2"></i>Unauthorized Access Attempt</td>
                                         <td><span class="badge bg-light text-dark border">192.168.1.45</span></td>
                                         <td>Unknown</td>
                                         <td><span class="custom-badge badge-danger">High</span></td>
                                     </tr>
-                                    <tr>
+                                    <tr class="interactive-row" data-severity="medium" data-details="User requested a password reset. Email dispatched successfully. IP matches user's usual location. No immediate action required.">
                                         <td class="text-muted small">Oct 24, 13:15:22</td>
                                         <td class="fw-bold"><i class="bi bi-key text-muted me-2"></i>Password Reset Requested</td>
                                         <td><span class="badge bg-light text-dark border">10.0.0.12</span></td>
                                         <td>j.smith@entreprise.com</td>
                                         <td><span class="custom-badge badge-warning">Medium</span></td>
                                     </tr>
-                                    <tr>
+                                    <tr class="interactive-row" data-severity="low" data-details="Routine update to AWS Security Group rules applied by automated CI/CD pipeline deployment. Validated by SysOps team.">
                                         <td class="text-muted small">Oct 24, 11:05:40</td>
                                         <td class="fw-bold"><i class="bi bi-shield-check text-muted me-2"></i>Firewall Rules Updated</td>
                                         <td><span class="badge bg-light text-dark border">172.16.254.1</span></td>
                                         <td>System Admin</td>
                                         <td><span class="custom-badge badge-success">Low</span></td>
+                                    </tr>
+                                    <tr class="interactive-row" data-severity="high" data-details="SQL Injection payload detected in the query parameters of the primary login endpoint. Request was blocked by WAF.">
+                                        <td class="text-muted small">Oct 24, 09:12:11</td>
+                                        <td class="fw-bold"><i class="bi bi-database-exclamation text-muted me-2"></i>WAF Block: SQLi Detected</td>
+                                        <td><span class="badge bg-light text-dark border">203.0.113.88</span></td>
+                                        <td>Public API</td>
+                                        <td><span class="custom-badge badge-danger">High</span></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -192,6 +218,44 @@
             </div>
         </div>
     </main>
+
+    <!-- Log Details Modal -->
+    <div class="modal fade" id="logDetailsModal" tabindex="-1" aria-labelledby="logDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="logDetailsModalLabel">Event Forensics</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-3">
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold mb-1">EVENT TYPE</label>
+                        <div id="modalEventType" class="fw-bold">--</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="text-muted small fw-bold mb-1">IP ADDRESS</label>
+                            <div id="modalIpAddress">--</div>
+                        </div>
+                        <div class="col-6">
+                            <label class="text-muted small fw-bold mb-1">SEVERITY</label>
+                            <div id="modalSeverity">--</div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small fw-bold mb-1">FORENSIC DETAILS</label>
+                        <div class="p-3 bg-light rounded text-dark" id="modalDetails" style="font-family: monospace; font-size: 0.85rem;">
+                            --
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Isolate IP</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Toast -->
     <div class="toast-container position-fixed bottom-0 end-0 p-4">
