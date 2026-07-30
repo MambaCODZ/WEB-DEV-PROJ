@@ -8,15 +8,6 @@ A professional, feature-ready, responsive frontend dashboard template designed f
 - [Executive Overview](#-executive-overview)
 - [Key Features](#-key-features)
 - [Technology Stack](#-technology-stack)
-- [Directory Structure](#-directory-structure)
-- [Quick Start & Deployment](#-quick-start--deployment)
-- [Responsive Layout System](#-responsive-layout-system)
-- [Backend Integration Guide](#-backend-integration-guide)
-  - [1. Authentication Flow](#1-authentication-flow)
-  - [2. Live Data Endpoints](#2-live-data-endpoints)
-  - [3. Export Engine](#3-export-engine)
-- [Customization & Theming](#-customization--theming)
-- [Commercial License & Handoff](#-commercial-license--handoff)
 
 ---
 
